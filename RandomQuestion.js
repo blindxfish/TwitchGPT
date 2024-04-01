@@ -7,7 +7,7 @@ const username = process.env['TWITCH_USERNAME']
 const channel = "blindflsh";
 
 let ChatArray = [];
-const questionInterval = 5 * 60 * 1000; // 5 minutes in milliseconds
+const questionInterval = 5 * 60 * 1000; // 5 minutes in milliseconds - CHANGE THIS FOR THE FREQUENCY
 
 // Set the initial last conversation time to 5 minutes ago
 let lastConversation = new Date(new Date().getTime() - 50000);
