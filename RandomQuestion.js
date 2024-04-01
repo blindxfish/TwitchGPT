@@ -60,8 +60,11 @@ function fireGTPmessage(chat){
    let lastQuestions = ChatArray.join(";");
    console.log(lastQuestions);
 
+   //INSTRUCT THE BOT WHAT SHALL HE DO IN THE CHAT:
 let constructedMessage = `Ask a random programming interwiev question that is not in this array: [${ChatArray.slice(-10).join(', ')}]`;
-  
+/*
+let constructedMessage = `Say something short that fits the context of this conversation: [${ChatArray.slice(-10).join(', ')}]`;
+*/
     askGpt(constructedMessage,chat);
 }
 
