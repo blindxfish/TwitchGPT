@@ -33,7 +33,7 @@ const run = async () => {
         const currentTime = new Date();
         if (currentTime - lastConversation >= getDynamicInterval()) {
             await fireMessage(chat);
-            lastConversation = new Date();
+          //  lastConversation = new Date();
         }
     };
 
@@ -58,7 +58,10 @@ const run = async () => {
 function getDynamicInterval() {
     // Increase interval when activity is high, decrease when low
     const activityFactor = Math.max(0, Math.min(1, recentActivity / highActivityThreshold));
-    return minInterval + activityFactor * (maxInterval - minInterval);
+    let interv =  minInterval + activityFactor * (maxInterval - minInterval);
+    console.log(interv + " - dynamicInterval");
+    return interv;
+
 }
 
 async function fireMessage(chat) {
