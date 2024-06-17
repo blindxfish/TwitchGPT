@@ -1,10 +1,4 @@
 
-test:
-https://chat.openai.com/g/g-7NejvFUBj-devbuddy
-
-chatGPT API key:
-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
-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
 
 chatGPT -> NodeJS -> TwitchChat
 TwitchChat -x10-> NodeJS -> ChatGPT
