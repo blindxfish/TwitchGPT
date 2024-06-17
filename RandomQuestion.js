@@ -7,7 +7,7 @@ const username = process.env['TWITCH_USERNAME']
 const channel = "blindflsh";
 
 let ChatArray = [];
-const questionInterval = 5 * 60 * 1000; // 5 minutes in milliseconds - CHANGE THIS FOR THE FREQUENCY
+const questionInterval = 10 * 10000; // 5 minutes in milliseconds - CHANGE THIS FOR THE FREQUENCY
 
 // Set the initial last conversation time to 5 minutes ago
 let lastConversation = new Date(new Date().getTime() - 50000);
@@ -61,10 +61,9 @@ function fireGTPmessage(chat){
    console.log(lastQuestions);
 
    //INSTRUCT THE BOT WHAT SHALL HE DO IN THE CHAT:
-let constructedMessage = `Ask a random programming interwiev question that is not in this array: [${ChatArray.slice(-10).join(', ')}]`;
-/*
-let constructedMessage = `Say something short that fits the context of this conversation: [${ChatArray.slice(-10).join(', ')}]`;
-*/
+
+let constructedMessage = `Tell a famous quote from a video game tha is not in this array: [${ChatArray.slice(-10).join(', ')}]`;
+
     askGpt(constructedMessage,chat);
 }
 
@@ -73,12 +72,12 @@ async function askGpt(constructedMessage,chat) {
         console.log(constructedMessage);
         const chatCompletion = await openai.chat.completions.create({
             messages: [{ role: 'user', content: constructedMessage}],
-            model: 'gpt-4',
+            model: 'gpt-3.5-turbo-1106',
         });
         // Log the response to the console
         let response = chatCompletion.choices[0].message;
         console.log(response.content);
-        
+        ChatArray.push(response.content);
         if (typeof response.content === 'string') {
             respondToChat(channel, response.content, chat);  
         } else {
