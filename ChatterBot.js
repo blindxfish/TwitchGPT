@@ -7,8 +7,11 @@ const username = process.env['TWITCH_USERNAME'];
 const channel = "blindflsh";
 
 let sentMessages = [];
-const minInterval = 5 * 60 * 1000; // 5 minutes in milliseconds
-const maxInterval = 20 * 60 * 1000; // 20 minutes in milliseconds
+let recentActivity = 0;
+const activityWindow = 5 * 60 * 1000; // 5 minutes in milliseconds
+const minInterval = 1 * 60 * 1000; // 1 minute in milliseconds
+const maxInterval = 5 * 60 * 1000; // 5 minutes in milliseconds
+const highActivityThreshold = 10; // Number of messages in activityWindow considered high activity
 
 let lastConversation = new Date(new Date().getTime() - minInterval);
 
@@ -27,9 +30,9 @@ const run = async () => {
 
     // Function to check and fire message
     const checkAndFireMessage = async () => {
-        if (new Date() - lastConversation >= minInterval) {
-            const noActivity = new Date() - lastConversation >= maxInterval;
-            await fireMessage(chat, noActivity);
+        const currentTime = new Date();
+        if (currentTime - lastConversation >= getDynamicInterval()) {
+            await fireMessage(chat);
             lastConversation = new Date();
         }
     };
@@ -46,11 +49,19 @@ const run = async () => {
             sentMessages.shift(); // Remove the oldest message
         }
         sentMessages.push(savedMsg);
+        recentActivity++;
+        setTimeout(() => recentActivity--, activityWindow); // Decrease activity count after the activity window
         lastConversation = new Date(); // Update the last conversation time to the current time
     });
 };
 
-async function fireMessage(chat, noActivity) {
+function getDynamicInterval() {
+    // Increase interval when activity is high, decrease when low
+    const activityFactor = Math.max(0, Math.min(1, recentActivity / highActivityThreshold));
+    return minInterval + activityFactor * (maxInterval - minInterval);
+}
+
+async function fireMessage(chat) {
     const options = [
         "!police", "!strobe", "!hearth", "!rainbow", "!storm", 
         "!disco", "!ocean", "!mystic", "!cool", "!passday", 
@@ -58,8 +69,9 @@ async function fireMessage(chat, noActivity) {
         "LUL", "CoolStoryBob"
     ];
 
+    const noActivity = recentActivity === 0;
     if (noActivity) {
-        // If there's no activity for a while, send a random command or emote from options
+        // If there's no activity, send a random command or emote from options
         const randomCommand = options[Math.floor(Math.random() * options.length)];
         respondToChat(channel, randomCommand, chat);
     } else {
@@ -114,6 +126,8 @@ async function askGpt(promptMessage, chat) {
         });
 
         let response = chatCompletion.choices[0].message.content.trim();
+        // Remove all double quotes from the response
+        response = response.replace(/"/g, '');
         if (response.length <= 50 && !sentMessages.includes(response)) {
             const messages = splitMessage(response);
             for (const msg of messages) {
