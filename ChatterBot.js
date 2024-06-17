@@ -88,7 +88,7 @@ function createRandomPrompt() {
     const randomIndex = Math.floor(Math.random() * randomQuestions.length);
     const randomPrompt = randomQuestions[randomIndex];
 
-    let promptMessage = `Generate a short Twitch chat message. Use emojis and short sentences. You can ask something like: ${randomPrompt}.`;
+    let promptMessage = `Generate a short Twitch chat message. Use emojis and short sentences. Keep it under 50 characters. You can ask something like: ${randomPrompt}.`;
     
     if (randomMemoryMessage) {
         promptMessage += ` You can also refer to this recent message: "${randomMemoryMessage}".`;
@@ -114,7 +114,7 @@ async function askGpt(promptMessage, chat) {
         });
 
         let response = chatCompletion.choices[0].message.content.trim();
-        if (response.length <= 60 && !sentMessages.includes(response)) {
+        if (response.length <= 50 && !sentMessages.includes(response)) {
             const messages = splitMessage(response);
             for (const msg of messages) {
                 respondToChat(channel, msg, chat);
