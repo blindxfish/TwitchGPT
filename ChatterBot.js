@@ -33,7 +33,7 @@ const run = async () => {
         const currentTime = new Date();
         if (currentTime - lastConversation >= getDynamicInterval()) {
             await fireMessage(chat);
-          //  lastConversation = new Date();
+            lastConversation = new Date();
         }
     };
 
@@ -58,10 +58,7 @@ const run = async () => {
 function getDynamicInterval() {
     // Increase interval when activity is high, decrease when low
     const activityFactor = Math.max(0, Math.min(1, recentActivity / highActivityThreshold));
-    let interv =  minInterval + activityFactor * (maxInterval - minInterval);
-    console.log(interv + " - dynamicInterval");
-    return interv;
-
+    return minInterval + activityFactor * (maxInterval - minInterval);
 }
 
 async function fireMessage(chat) {
@@ -129,8 +126,6 @@ async function askGpt(promptMessage, chat) {
         });
 
         let response = chatCompletion.choices[0].message.content.trim();
-        // Remove all double quotes from the response
-        response = response.replace(/"/g, '');
         if (response.length <= 50 && !sentMessages.includes(response)) {
             const messages = splitMessage(response);
             for (const msg of messages) {
