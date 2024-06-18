@@ -19,8 +19,8 @@ const STATES = {
 };
 
 const BEHAVIORS = [
-    { name: 'RespondToSomeone', cost: 3, func: respondToSomeone },
-    { name: 'SendAnEmoji', cost: 1, func: sendAnEmoji },
+    { name: 'RespondToSomeone', cost: 2, func: respondToSomeone },
+    { name: 'SendAnEmoji', cost: 2, func: sendAnEmoji },
     { name: 'AskAQuestion', cost: 2, func: askAQuestion },
     { name: 'SendLightRedeem', cost: 2, func: sendLightRedeem } // Added new behavior
   ];
@@ -28,18 +28,22 @@ const BEHAVIORS = [
 let sentMessages = [];
 let recentActivity = 0;
 const activityWindow = 5 * 60 * 1000; // 5 minutes in milliseconds
-const highActivityThreshold = 10; // Number of messages in activityWindow considered high activity
+const highActivityThreshold = 5; // Number of messages in activityWindow considered high activity
+let minInterval = 5000;
+let maxInterval = 60000;
 
 let lastConversation = new Date(new Date().getTime() - minInterval);
 
 let botState = STATES.IDLE;
 let points = 0;
 
+const chat = new Chat({
+    username,
+    token
+  });
+
 const run = async () => {
-    const chat = new Chat({
-      username,
-      token
-    });
+  
 
     await chat.connect();
     await chat.join(channel);
@@ -65,7 +69,7 @@ const run = async () => {
 
         lastConversation = new Date(); // Update the last conversation time to the current time
 
-        if (botState === STATES.IDLE) {
+        if (botState === STATES.IDLE && Math.random<0.1) {
             botState = STATES.RESPONDING;
             executeBehavior(chat, BEHAVIORS[0]); // Respond to someone if idle
         }
@@ -77,7 +81,7 @@ const run = async () => {
 function checkAndFireMessage() {
     const currentTime = new Date();
     const nextInterval = getDynamicInterval();
-    console.log(`Checking if it's time to send a message. Current time: ${currentTime}, Last conversation: ${lastConversation}, Next interval: ${nextInterval}ms`);
+  //  console.log(`Checking if it's time to send a message. Current time: ${currentTime}, Last conversation: ${lastConversation}, Next interval: ${nextInterval}ms`);
 
     if (currentTime - lastConversation >= nextInterval) {
         if (botState === STATES.IDLE) {
@@ -123,7 +127,7 @@ function createRandomPrompt() {
     const randomIndex = Math.floor(Math.random() * randomQuestions.length);
     const randomPrompt = randomQuestions[randomIndex];
 
-    let promptMessage = `Generate a short Twitch chat message. Use emojis and short sentences. Keep it under 50 characters. You can ask something like: ${randomPrompt}.`;
+    let promptMessage = `Generate a short Twitch chat message. Use sentences. Keep it under 50 characters. You can ask something like: ${randomPrompt}.`;
     
     if (randomMemoryMessage) {
         promptMessage += ` You can also refer to this recent message: "${randomMemoryMessage}".`;
