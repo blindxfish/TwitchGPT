@@ -11,4 +11,4 @@ TWITCH_USERNAME=""
 TWITCH_TOKEN = ""
 
 3. open the terminal where the project is and run the tool with this command: 
-    node .\RandomQuestion.js
+    node .\ChatterBot.js
